@@ -14,6 +14,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 
 
+
 class Livre(Base):
 
     """Livre model representing a book in the application."""
@@ -21,7 +22,7 @@ class Livre(Base):
     __tablename__ = "livres"
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    title: Mapped[str] = mapped_column(String, nullable=False)
+    titre: Mapped[str] = mapped_column(String, nullable=False)
     auteur: Mapped[str] = mapped_column(String, nullable=False)
     isbn: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=False)
     date_publication: Mapped[Date] = mapped_column(Date, nullable=False)
