@@ -15,7 +15,7 @@ router = APIRouter(
     prefix=("/categories"),
     tags= ["Categorie"]
 )
-
+ 
 @router.get("/",
     response_model=list[CategorieResponse],
     summary="Listes des categories",
