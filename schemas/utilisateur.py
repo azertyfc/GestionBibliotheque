@@ -1,6 +1,5 @@
 from pydantic import ConfigDict,Field,BaseModel
 from schemas.role import RoleResponse
-
 class UtilisateurResponse(BaseModel):
 
     id:int
@@ -12,3 +11,13 @@ class UtilisateurResponse(BaseModel):
     email:str
     
     role:RoleResponse
+
+
+class UtilisateurUpdate(BaseModel):
+
+    prenom: str | None = None
+
+    nom: str | None = None
+
+    role_id: int | None = None
+

@@ -2,15 +2,14 @@ from fastapi import APIRouter,Depends,HTTPException
 from services.utilisateur_service import (
     recuperer_utilisateurs,
     recuperer_utilisateur,
-    recuperer_employe_par_email
+    modifier_utilisateur
+
 )
 from sqlalchemy.orm import Session
 from database.dependency import get_db
-from schemas.utilisateur import UtilisateurResponse
-from schemas.auth import LoginRequest
-from security.auth import get_current_user
+from schemas.utilisateur import UtilisateurResponse,UtilisateurUpdate
 from models.utilisateur import Utilisateur
-from fastapi.security import OAuth2PasswordRequestForm
+
 
 
 router = APIRouter(
@@ -23,21 +22,28 @@ router = APIRouter(
 )
 def get_utilisateurs(
     db:Session = Depends(get_db),
-    current_user: Utilisateur = Depends(get_current_user)
 ):
-    return current_user
+    return recuperer_utilisateurs(db)
 
 
-@router.get("/{users_id}",response_model= UtilisateurResponse,
+@router.get("/{user_id}",response_model= UtilisateurResponse,
     summary="L'utilisateur"
 )
 def get_utilisateur(
-    users_id:int,
+    user_id:int,
     db:Session = Depends(get_db)
 ):
-    return recuperer_utilisateur(db,users_id)
+    return recuperer_utilisateur(db,user_id)
 
-
+@router.patch("/{user_id}",response_model=UtilisateurResponse,
+    summary="Modifier un Utilisateur"
+)
+def update_utilisateur(
+    user_id:int,
+    user_update:UtilisateurUpdate,
+    db:Session=Depends(get_db)
+):
+    return modifier_utilisateur(db,user_update,user_id)
 
 """
 
