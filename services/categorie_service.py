@@ -2,6 +2,9 @@ from schemas.categorie import CategorieUpdate
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from models.categorie import Categorie
+from security.auth import get_current_user
+from fastapi import Depends,HTTPException
+from models import Utilisateur
 
 from fastapi import HTTPException
 
@@ -87,3 +90,5 @@ def supprimer_categorie(
     db.commit()
 
     return {"message": "Catégorie supprimée avec succès"}
+
+

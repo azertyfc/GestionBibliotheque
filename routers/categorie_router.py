@@ -2,19 +2,22 @@ from fastapi import APIRouter,Depends,status
 from services.categorie_service import(
     recuperer_categories,
     modifier_categorie,
-    creer_categorie,supprimer_categorie
+    creer_categorie,supprimer_categorie,
+    
 )
 from database.dependency import get_db
 from schemas.categorie import CategorieResponse,CategorieUpdate,CategorieCreate
 from sqlalchemy.orm import Session
 from models.categorie import Categorie
-
-
+from models.utilisateur import Utilisateur
+from security.permissions import bibliothecaire_required
 
 router = APIRouter(
     prefix=("/categories"),
-    tags= ["Categorie"]
+    tags= ["Categorie"],
+    
 )
+
  
 @router.get("/",
     response_model=list[CategorieResponse],
@@ -34,8 +37,10 @@ def get_categories(
 def update_categorie(
     categorie_id:int,
     categorie_update:CategorieUpdate,
-    db:Session = Depends(get_db)
+    db:Session = Depends(get_db),
+    current_user: Utilisateur = Depends(bibliothecaire_required)
 ):
+    
     return modifier_categorie(db,categorie_update,categorie_id)
 
 @router.post("/",
