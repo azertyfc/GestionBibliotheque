@@ -26,6 +26,9 @@ class Emprunt(Base):
     DateTime,
     default=datetime.utcnow
     )
+    date_retour: Mapped[datetime] = mapped_column(
+    DateTime
+    )
     date_retour_prevue: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     utilisateur = relationship("Utilisateur", back_populates="emprunts")
     livre = relationship("Livre", back_populates="emprunts")  

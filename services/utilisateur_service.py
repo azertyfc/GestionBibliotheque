@@ -2,6 +2,24 @@ from models.utilisateur import Utilisateur
 from sqlalchemy.orm import selectinload,Session
 from sqlalchemy import select
 from schemas.utilisateur import UtilisateurUpdate
+from security.password import hash_password
+
+def creer_utilisateur(
+    db: Session,
+    utilisateur: Utilisateur
+):
+
+    utilisateur.mot_de_passe = hash_password(
+        utilisateur.mot_de_passe
+    )
+
+    db.add(utilisateur)
+
+    db.commit()
+
+    db.refresh(utilisateur)
+
+    return utilisateur
 
 
 def recuperer_utilisateurs(

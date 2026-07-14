@@ -10,7 +10,7 @@ from schemas.categorie import CategorieResponse,CategorieUpdate,CategorieCreate
 from sqlalchemy.orm import Session
 from models.categorie import Categorie
 from models.utilisateur import Utilisateur
-from security.permissions import bibliothecaire_required
+from security.permissions import role_required
 
 router = APIRouter(
     prefix=("/categories"),
@@ -29,16 +29,22 @@ def get_categories(
 ):
     return recuperer_categories(db)
 
+"""current_user=Depends(role_required("bibliothecaire"))"""
+
 @router.patch("/{categorie_id}",
     response_model=CategorieResponse,
     summary="Modifier une categorie",
-    description="retourner categorie"
+    description="retourner categorie",
+    dependencies=[
+        Depends(role_required("bibliothecaire"))
+    ]
+   
 )
 def update_categorie(
     categorie_id:int,
     categorie_update:CategorieUpdate,
     db:Session = Depends(get_db),
-    current_user: Utilisateur = Depends(bibliothecaire_required)
+    
 ):
     
     return modifier_categorie(db,categorie_update,categorie_id)

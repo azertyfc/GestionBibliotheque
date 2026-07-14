@@ -18,3 +18,9 @@ class EmpruntResponse(BaseModel):
     livre:LivreResponse
 
     model_config = ConfigDict(from_attributes=True)
+
+
+
+class EmpruntCreate(BaseModel):
+    utilisateur_id: int
+    livre_id: int

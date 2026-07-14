@@ -2,14 +2,15 @@ from fastapi import APIRouter,Depends,HTTPException
 from services.utilisateur_service import (
     recuperer_utilisateurs,
     recuperer_utilisateur,
-    modifier_utilisateur
+    modifier_utilisateur,
+    creer_utilisateur
 
 )
 from sqlalchemy.orm import Session
 from database.dependency import get_db
-from schemas.utilisateur import UtilisateurResponse,UtilisateurUpdate
+from schemas.utilisateur import UtilisateurResponse,UtilisateurUpdate,UtilisateurCreate
 from models.utilisateur import Utilisateur
-
+from security.password import hash_password
 
 
 router = APIRouter(
@@ -17,6 +18,42 @@ router = APIRouter(
     tags=["Utilisateurs"] 
 )
 
+@router.post(
+    "/register",
+    response_model=UtilisateurResponse
+)
+def register(
+    utilisateur: UtilisateurCreate,
+    db: Session = Depends(get_db)
+):
+
+    utilisateur_db = Utilisateur(
+    **utilisateur.model_dump()
+)
+
+    return creer_utilisateur(
+        db,
+        utilisateur_db
+    )
+"""
+@router.post(
+    "/register",
+    response_model=UtilisateurResponse
+)
+def register(
+    utilisateur: UtilisateurCreate,
+    db: Session = Depends(get_db)
+):
+
+    utilisateur_db = Utilisateur(
+    **utilisateur.model_dump()
+)
+    return creer_utilisateur(
+        db,
+        utilisateur_db
+    )
+
+"""
 @router.get("/",response_model= list[UtilisateurResponse],
     summary="Les utilisateurs"
 )

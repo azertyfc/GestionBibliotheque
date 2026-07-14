@@ -43,7 +43,8 @@ def recuperer_categories(
 def modifier_categorie(
     db:Session,
     categorie_update:CategorieUpdate,
-    categorie_id
+    categorie_id:int,
+   
 ):
     try:
 
