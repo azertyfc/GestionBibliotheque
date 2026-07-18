@@ -29,6 +29,11 @@ class Emprunt(Base):
     date_retour: Mapped[datetime] = mapped_column(
     DateTime
     )
+    nombre_renouvellements = Column(
+    Integer,
+    default=0,
+    nullable=False
+    )
     date_retour_prevue: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     utilisateur = relationship("Utilisateur", back_populates="emprunts")
     livre = relationship("Livre", back_populates="emprunts")  

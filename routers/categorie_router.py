@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from models.categorie import Categorie
 from models.utilisateur import Utilisateur
 from security.permissions import role_required
+from core.config import settings
 
 router = APIRouter(
     prefix=("/categories"),
@@ -27,6 +28,7 @@ router = APIRouter(
 def get_categories(
     db:Session = Depends(get_db)
 ):
+    print(settings.DATABASE_URL)
     return recuperer_categories(db)
 
 """current_user=Depends(role_required("bibliothecaire"))"""

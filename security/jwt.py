@@ -12,16 +12,17 @@ Le JWT permet d'identifier l'utilisateur connecté.
 from datetime import datetime, timedelta
 from jose import jwt
 from jose import JWTError
+from core.config import settings
 
 # ---------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------
 
-SECRET_KEY = "CHANGE_MOI_DANS_UN_.ENV"
+SECRET_KEY = settings.SECRET_KEY
 
 ALGORITHM = "HS256"
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 
 
 # ---------------------------------------------------------------------

@@ -49,6 +49,8 @@ class LimiteEmpruntDepasse(NotFoundException):
 class EmpruntEnCours(NotFoundException):
     pass
 
+class RenouvelerImpossible(NotFoundException):
+    pass
 
 class UnauthorizedException(NotFoundException):
     pass
