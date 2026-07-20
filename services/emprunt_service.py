@@ -1,14 +1,14 @@
-from sqlalchemy import select,func,update
+from sqlalchemy import select,func
 from sqlalchemy.orm import Session,selectinload
 from models.emprunt import Emprunt
-from fastapi import HTTPException
 from models.livre import Livre
 from datetime import datetime,timedelta
 from core.exceptions import (LimiteEmpruntDepasse,
     LivreIndisponible,
     EmpruntEnCours,
-    RenouvelerImpossible)
-
+    RenouvelerImpossible,
+    EmpruntIntrouvable)
+from services.penalite_service import calculer_penalite
 
 def creer_emprunt(
     db: Session,
@@ -57,9 +57,6 @@ def creer_emprunt(
         raise
     
 
-
-
-
 def recuperer_emprunts(
     db:Session
 ):
@@ -107,9 +104,6 @@ def compter_emprunts_en_cours_utilisateurs(
         return nb_emprunts 
 
 
-  
-
-
 def utilisateur_peut_emprunter(
     db: Session,
     user_id: int,
@@ -144,45 +138,83 @@ def get_livre(
         
 
 
-def recuperer_emprunt_dun_livre(
-          db:Session,
-          livre_id:int
+def get_emprunt_actif(
+    db,
+    utilisateur_id,
+    livre_id
 ):
+    
     return (
-           db.execute(select(Emprunt).options(selectinload(Livre))
-            .where(Emprunt.livre_id==livre_id)
+        db.execute(
+            select(Emprunt).where(
+                Emprunt.livre_id == livre_id,
+                Emprunt.utilisateur_id == utilisateur_id,
+                Emprunt.date_retour.is_(None),
+            )
         ).scalar_one_or_none()
-     )
+    )
+
 
 def renouveler_emprunt(
     db: Session,
     user_id: int,
     livre_id: int
 ):  
-    emprunt = recuperer_emprunt_dun_livre(db,livre_id)
+    emprunt = get_emprunt_actif(db,user_id,livre_id)
 
-    if emprunt.date_retour_prevue == datetime.utcnow():
+    if emprunt is None:
+       raise EmpruntIntrouvable("Emprunt Introuvable")
+    
+    if emprunt.nombre_renouvellements >= 1:
         raise RenouvelerImpossible(
             "Impossible de renouveller cette emprumt"
         )
 
-    date_prevu_retour = datetime.utcnow() + timedelta(days=7)
-
-    emprunt = Emprunt(
-            utilisateur_id=user_id,
-            livre_id=livre_id,
-            date_retour_prevue=date_prevu_retour,
-            date_retour=None,
-    )
-
-    db.add(emprunt)
+    emprunt.date_retour_prevue += timedelta(days=7)
+    emprunt.nombre_renouvellements += 1
 
     db.commit()
 
 
 
+
+def enregistrer_retour(
+    emprunt:Emprunt
+):
+    if emprunt.date_retour is None:
+       date_retour_reel = datetime.utcnow()
+    
+    emprunt.date_retour = date_retour_reel
+
+
+
+def incrementer_stock(
+    livre:Livre
+):  
+    livre.quantite_disponible+=1
+
+    
+def retourner_livre_emprunt(
+    db:Session,
+    user_id:int,
+    livre_id:int
+):
+    emprunt = get_emprunt_actif(db,user_id,livre_id)
+
+    enregistrer_retour(emprunt)
+
+    incrementer_stock(emprunt.livre)
+
+    penalite = calculer_penalite(emprunt)
+    
+    if penalite:
+        db.add(penalite)
     
 
+    db.commit()
+
+        
+    
       
 
 

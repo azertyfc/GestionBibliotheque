@@ -36,6 +36,7 @@ class Emprunt(Base):
     )
     date_retour_prevue: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     utilisateur = relationship("Utilisateur", back_populates="emprunts")
-    livre = relationship("Livre", back_populates="emprunts")  
+    livre = relationship("Livre", back_populates="emprunts") 
+    penalites = relationship("Penalite", back_populates="emprunts") 
 
 

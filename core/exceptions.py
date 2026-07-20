@@ -55,6 +55,8 @@ class RenouvelerImpossible(NotFoundException):
 class UnauthorizedException(NotFoundException):
     pass
 
+class EmpruntIntrouvable(NotFoundException):
+    pass
 
 class RapportIntrouvable(NotFoundException):
     pass
